@@ -1,0 +1,146 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPage.master.cs" Inherits="HRIS_eRSP.MasterPage" %>
+<!DOCTYPE html>
+<html>
+<head runat="server">
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <title>HRIS</title>
+      <!-- Bootstrap core CSS-->
+      <link rel="stylesheet"  href="~/vendor/bootstrap/css/bootstrap.min.css">
+      <!-- Custom fonts for this template-->
+      <link  rel="stylesheet" href="~/vendor/font-awesome/css/font-awesome.min.css">
+      <!-- Page level plugin CSS-->
+      <link  rel="stylesheet" href="~/vendor/datatables/dataTables.bootstrap4.css">
+      <!-- Custom styles for this template-->
+      <link href="~/css/sb-admin.css" rel="stylesheet">
+    <asp:ContentPlaceHolder ID="specific_css" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <a class="navbar-brand" href='<%= ResolveUrl("~/") %>'"><small><% string str = "HRIS-eRSP";%><%: str %></small></a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+<%
+    foreach (page_menus menu in menus)
+    {
+        if (menu.menu_id_link == 0)
+        {
+            if (menu.url_name != "")
+            {
+%>
+                <li class="nav-item">
+                      <a class="nav-link" href="<%= ResolveUrl("~/View/"+menu.url_name.Replace(".aspx","")+"/"+menu.url_name) %>">
+                        <i class="<%: menu.menu_icon %>"></i>
+                        <span class="nav-link-text"><%: menu.menu_name %></span>
+                      </a>
+                </li>
+<%
+            }
+            else
+            {
+%>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Common Definition">
+                    <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#<%: menu.id %>" data-parent="#exampleAccordion">
+                    <i class="<%: menu.menu_icon %>"></i>
+                    <span class="nav-link-text"><%: menu.menu_name %></span>
+                    </a>
+                    <ul class="sidenav-second-level collapse" id="<%: menu.id %>">
+<%
+                foreach(page_menus second_lvl in menus)
+                {
+                    if (second_lvl.url_name != "" && menu.id == second_lvl.menu_id_link && second_lvl.menu_level == 2)
+                    {
+%>
+                    <li class="nav-item">
+                      <a class="nav-link" href="<%= ResolveUrl("~/View/"+ second_lvl.url_name.Replace(".aspx","") +"/"+second_lvl.url_name) %>"">
+                        <i class="fa fa-caret-right"></i>
+                          <span class="nav-link-text"><%: second_lvl.menu_name %></span>
+                      </a>
+                    </li>             
+<%
+                    }
+                    else if(second_lvl.menu_id_link == menu.id  && second_lvl.menu_level == 2)
+                    {
+%>
+                    <li>
+                        <a class="nav-link-collapse collapsed" data-toggle="collapse" href="#<%: second_lvl.id %>"><%: second_lvl.menu_name %></a>
+                        <ul class="sidenav-third-level collapse" id="<%: second_lvl.id %>">
+<%
+                        foreach(page_menus third_lvl in menus)
+                        {
+                            if ( third_lvl.menu_id_link == second_lvl.id && third_lvl.menu_level == 3)
+                            {
+%>
+                            <li>
+                                <a href="<%= ResolveUrl("~/View/"+third_lvl.url_name.Replace(".aspx","")+"/"+third_lvl.url_name) %>"><i class="fa fa-caret-right"></i><%: third_lvl.menu_name %></a>
+                            </li>
+<%
+                            }
+                        }
+%>           
+                        </ul>
+                    </li>
+<%
+                    }
+                }
+%>                       
+                </ul>
+            </li>
+            
+<% 
+            }
+        }
+    }
+%>
+      </ul>
+         <%--First End--%>
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
+            <i class="fa fa-fw fa-sign-out"></i>Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+    
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            <asp:ContentPlaceHolder ID="MainContainer" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+     </div>
+   
+    <asp:ContentPlaceHolder ID="specific_scripts" runat="server">
+    </asp:ContentPlaceHolder>
+    <!-- Bootstrap core JavaScript-->
+    <script src='<%= ResolveUrl("~/vendor/jquery/jquery.min.js") %>'></script>
+    <script src='<%= ResolveUrl("~/vendor/popper/popper.min.js") %>'></script>
+    <script src='<%= ResolveUrl("~/vendor/bootstrap/js/bootstrap.min.js") %>'></script>
+    <!-- Core plugin JavaScript-->
+    <script src='<%= ResolveUrl("~/vendor/jquery-easing/jquery.easing.min.js") %>'></script>
+    <!-- Page level plugin JavaScript-->
+    <script src='<%= ResolveUrl("~/vendor/chart.js/Chart.min.js") %>'></script>
+    <script src='<%= ResolveUrl("~/vendor/datatables/jquery.dataTables.js") %>' ></script>
+    <script src='<%= ResolveUrl("~/vendor/datatables/dataTables.bootstrap4.js") %>'></script>
+    <!-- Custom scripts for all pages-->
+    <script src='<%= ResolveUrl("~/js/sb-admin.min.js") %>'></script>
+    <!-- Custom scripts for this page-->
+    <script src='<%= ResolveUrl("~/js/sb-admin-datatables.min.js") %>'></script>
+    <script src='<%= ResolveUrl("~/js/sb-admin-charts.min.js") %>'></script>
+</body>
+</html>
